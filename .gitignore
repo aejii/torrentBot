@@ -8,6 +8,7 @@ node_modules
 package-lock.json
 .env
 uploads/
+tmp/
 
 ### STS ###
 .apt_generated
