@@ -5,6 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "nodemon --exec ts-node -- ./src/index.ts",
+    "example": "ts-node -- ./src/example.ts",
     "lint": "prettier --write ./src/**/*.{ts,js,css,html}"
   },
   "repository": {
@@ -18,10 +19,13 @@
   },
   "homepage": "https://github.com/sonbyungjun/torrentBot#readme",
   "dependencies": {
+    "cloudscraper": "^4.5.0",
     "dotenv": "^8.2.0",
     "node-telegram-bot-api": "^0.40.0",
     "node-torrent": "^0.2.2",
     "puppeteer": "^2.0.0",
+    "puppeteer-extra": "^3.1.7",
+    "puppeteer-extra-plugin-stealth": "^2.4.5",
     "ts-node": "^8.5.4",
     "typescript": "^3.7.4"
   },

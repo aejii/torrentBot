@@ -1,4 +1,8 @@
 import puppeteer from 'puppeteer'
+import puppeteerExtra from 'puppeteer-extra'
+import pluginStealth from 'puppeteer-extra-plugin-stealth'
+import cloudscraper from 'cloudscraper'
+let scraper:any = cloudscraper
 
 export const init = async () => {
     console.log(`🚧  초기 실행 진행 중...`)
@@ -13,7 +17,7 @@ export const init = async () => {
             '--window-position=0,0',
             '--ignore-certifcate-errors',
             '--ignore-certifcate-errors-spki-list',
-            '--user-agent="Mozilla/6.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"',
+            //'--user-agent="Mozilla/6.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/65.0.3312.0 Safari/537.36"',
         ]
 
         const options = {
@@ -23,7 +27,10 @@ export const init = async () => {
             userDataDir: './tmp',
         }
 
-        let browser = await puppeteer.launch(options)
+        // @ts-ignore
+        puppeteerExtra.use(pluginStealth())
+
+        let browser = await puppeteerExtra.launch(options)
         console.log(`🚧  헤드리스 크롬이 시작되었습니다.`)
         
         return browser
@@ -38,9 +45,19 @@ export const init = async () => {
 // 페이지 이동
 export const navigatePage = async (page: puppeteer.Page, targetUrl: string) => {
     try {
+        let hookHeaders: any = await scrapeCloudflareHttpHeaderCookie (targetUrl)
+
+        // Anti Cloud Flare
+        await page.setRequestInterception(true)
+        page.on('request', request => {
+            const headers = request.headers()
+            request.continue({ ...hookHeaders })
+        })
+
         await page.goto(targetUrl, {
             waitUntil: ['load', 'networkidle0'],
         })
+
         return true
     } catch (e) {
         console.log('페이지 접속 중 오류가 발생했습니다.')
@@ -59,3 +76,15 @@ export const saftyGoto = async (page: puppeteer.Page, targetUrl: string) => {
 }
 
 export const delay = time => new Promise(res => setTimeout(res, time))
+
+// 스크레이퍼 초기화
+export const scrapeCloudflareHttpHeaderCookie = (url) =>
+	(new Promise ((resolve, reject) =>
+		(scraper.get (url, function (error, response, body) {
+			if (error) {
+				reject (error)
+			} else {
+				resolve (response.request.headers)
+			}
+		}))
+    ))
