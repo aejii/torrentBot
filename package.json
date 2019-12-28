@@ -1,0 +1,26 @@
+{
+  "name": "torrentbot",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "nodemon app",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sonbyungjun/torrentBot.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sonbyungjun/torrentBot/issues"
+  },
+  "homepage": "https://github.com/sonbyungjun/torrentBot#readme",
+  "dependencies": {
+    "dotenv": "^8.2.0",
+    "node-telegram-bot-api": "^0.40.0",
+    "node-torrent": "^0.2.2",
+    "puppeteer": "^2.0.0"
+  }
+}
