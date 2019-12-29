@@ -2,7 +2,18 @@ import puppeteer from 'puppeteer'
 import puppeteerExtra from 'puppeteer-extra'
 import pluginStealth from 'puppeteer-extra-plugin-stealth'
 import cloudscraper from 'cloudscraper'
+import {User} from "../domain/user";
+import {accessing} from "../handlers/nasHandler";
 let scraper: any = cloudscraper
+
+let browser;
+
+export const getBrowser = async () => {
+    if (!browser) {
+        browser = await init({isHeadless: false});
+    }
+    return browser;
+}
 
 export const init = async ({ isHeadless = true }) => {
     console.log(`🚧  초기 실행 진행 중...`)
@@ -68,6 +79,7 @@ export const navigatePage = async (
         console.log('페이지 접속 중 오류가 발생했습니다.')
         console.log('5초 뒤 해당 페이지 접속을 다시 시도합니다.')
         console.log(`문제가 된 페이지: ${targetUrl}\n`)
+
         await page.waitFor(5000)
         return false
     }
