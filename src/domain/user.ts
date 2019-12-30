@@ -5,6 +5,7 @@ export class User {
     nasHomepage: string;
     nasId: string;
     nasPassword: string;
+    active: boolean = false;
     mode: Mode = Mode.NONE;
 
     constructor(id: number, nasHomepage: string, nasId: string, nasPassword: string, mode) {

@@ -4,12 +4,14 @@ import { Mode } from "./domain/mode";
 import { User } from "./domain/user";
 import { accessSequence } from "./handlers/nasHandler";
 import {loginController} from "./controllers/loginController";
+import exp from "constants";
 
 const token = process.env.TELEGRAM_KEY
 const bot = new TelegramBot(token, { polling: true })
 
 const users = new Map();
 
+const LOGIN = "나스 로그인";
 const SEARCH_TORRENT = "토렌트 키워드 검색";
 const TORRENT_BEST = "장르별 베스트 보기";
 const SHOW_STATUS = "다운로드 목록";
@@ -27,33 +29,34 @@ bot.on('message', async msg => {
     const text = msg.text;
 
     console.log(id, text);
-    const user = users.get(id);
+    let user = users.get(id);
     console.log(users.get(id));
 
-    // await bot.sendMessage(id, '안녕하세요\n원하시는 메뉴를 선택 해주세요.', {
-    //     "reply_markup": {
-    //         "keyboard": [
-    //             ["나스 로그인"],
-    //             ["토렌트 검색"],
-    //             ["장르별 베스트 보기"]
-    //             ["나스 로그아웃"],
-    //         ]
-    //     }
-    // });
-    //
-    // if (text === "나스 로그인") {
-    //
-    // }
+    switch (text) {
+        case LOGIN:
+            users.set(id, Mode.LOGIN);
+            break;
+        case SEARCH_TORRENT:
+            break;
+        case TORRENT_BEST:
+            break;
+        case SHOW_STATUS:
+            break;
+        case HOME_BACK:
+            users.delete(id);
+            break;
+        default:
+            break;
+    }
 
-
+    user = users.get(id);
 
     switch (user) {
         case undefined:
-            await bot.sendMessage(msg.chat.id, `안녕하세요\nnas 주소를 입력해주세요.`);
-            users.set(id, Mode.LOGIN);
+            await goHome(id);
             break;
         case Mode.LOGIN:
-            await loginController(users, id, msg, bot);
+            await loginController(id, msg, bot);
             break;
     }
 
@@ -64,6 +67,20 @@ bot.on('message', async msg => {
 
     // await bot.sendMessage(msg.chat.id, `${id}하이하이`)
 })
+
+export const goHome = async (id) => {
+    await bot.sendMessage(id, '원하시는 메뉴를 선택 해주세요.', {
+        reply_markup: {
+            keyboard: [
+                [LOGIN],
+                [SEARCH_TORRENT],
+                [TORRENT_BEST],
+                [SHOW_STATUS],
+                [HOME_BACK],
+            ]
+        }
+    });
+};
 
 bot.on('polling_error', error => {
     console.log(error.code) // => 'EFATAL'

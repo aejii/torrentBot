@@ -8,28 +8,38 @@ let nasId;
 let nasPassword;
 let user;
 
-export const loginController = async (users, id, msg, bot) => {
+let users = new Map();
+
+export const loginController = async (id, msg, bot) => {
+    let user = users.get(id);
+    if (user && user.active) {
+        return
+    }
     let text = msg.text;
     switch (loginMode) {
         case 0:
+            await bot.sendMessage(msg.chat.id, `나스 주소를 입력해주세요.`, { reply_markup: { hide_keyboard: true } });
+            loginMode++;
+            break
+        case 1:
             nasHomepage = text;
             await bot.sendMessage(msg.chat.id, `나스 아이디를 입력해주세요.`);
             loginMode++;
             break
-        case 1:
+        case 2:
             nasId = text;
             await bot.sendMessage(msg.chat.id, `나스 비번을 입력해주세요.`);
             loginMode++;
             break
-        case 2:
+        case 3:
             nasPassword = text;
             await bot.sendMessage(msg.chat.id, `로그인 중입니다.`);
             user = new User(id, nasHomepage, nasId, nasPassword, Mode.NONE);
             const isSuccess: boolean = await accessSequence(user, bot);
-            console.log(isSuccess);
             if (isSuccess) {
                 console.log('로그인 성공!');
                 await bot.sendMessage(msg.chat.id, `로그인 성공!`);
+                user.active = true;
                 users.set(id, user);
             } else {
                 console.log('로그인 실패!');
